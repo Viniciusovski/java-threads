@@ -2,7 +2,7 @@ package br.com.alura;
 
 import java.math.BigDecimal;
 
-public class OperacaoSaque {
+public class OperacaoSaque implements Runnable{
 
     private Conta conta;
     private BigDecimal valor;
@@ -12,7 +12,12 @@ public class OperacaoSaque {
         this.valor = valor;
     }
 
-    public void executa() {
+    // synchronized - Serve para evitar que múltiplas threads acessem um recurso ao mesmo tempo
+    // Atua nos dados compartilhados
+    // Garante consistência (thread safety)
+    // Como estivesse dizendo: "Só uma thread por vez pode executar esse trecho"
+    // Evita Condição de corrida (race condition)
+    public synchronized void executa() {
         System.out.println("Iniciando operação de saque.");
         var saldoAtual = conta.getSaldo();
 
@@ -22,5 +27,11 @@ public class OperacaoSaque {
             System.out.println("Saldo atual: " +conta.getSaldo());
         }
         System.out.println("Finalizando operação de saque.");
+    }
+
+    @Override
+    public void run() {
+        executa();
+        System.out.println("Thread: --" + Thread.currentThread().getName());
     }
 }
